@@ -1,0 +1,552 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BCC_DOTNET_LMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tblBook">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="author" Type="varchar" MaxLength="255" />
+          <Property Name="publication" Type="varchar" MaxLength="255" />
+          <Property Name="subject" Type="varchar" MaxLength="255" />
+          <Property Name="no_of_copies" Type="int" />
+          <Property Name="cover_pic" Type="image" />
+          <Property Name="title" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BCC_DOTNET_LMS.dbo.tblBooksIssued' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblBooksIssued">
+          <Key>
+            <PropertyRef Name="bookid" />
+            <PropertyRef Name="stuid" />
+          </Key>
+          <Property Name="bookid" Type="int" Nullable="false" />
+          <Property Name="stuid" Type="int" Nullable="false" />
+          <Property Name="issue_date" Type="date" />
+          <Property Name="return_date" Type="date" />
+        </EntityType>
+        <EntityType Name="tblStudentInfo">
+          <Key>
+            <PropertyRef Name="libid" />
+          </Key>
+          <Property Name="libid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="regno" Type="int" />
+          <Property Name="branch" Type="varchar" MaxLength="255" />
+          <Property Name="section" Type="varchar" MaxLength="255" />
+          <Property Name="semester" Type="varchar" MaxLength="255" />
+          <Property Name="year_of_admission" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BCC_DOTNET_LMS.dbo.tblStudentLogin' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblStudentLogin">
+          <Key>
+            <PropertyRef Name="logid" />
+          </Key>
+          <Property Name="logid" Type="int" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="255" />
+          <Property Name="password" Type="varchar" MaxLength="255" />
+          <Property Name="number_of_books" Type="int" />
+        </EntityType>
+        <EntityType Name="tblTeacherInfo">
+          <Key>
+            <PropertyRef Name="tid" />
+          </Key>
+          <Property Name="tid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="255" />
+          <Property Name="designation" Type="varchar" MaxLength="255" />
+          <Property Name="branch" Type="varchar" MaxLength="255" />
+          <Property Name="contact_no" Type="int" />
+          <Property Name="lectures" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BCC_DOTNET_LMS.dbo.tblTeacherLogin' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="tblTeacherLogin">
+          <Key>
+            <PropertyRef Name="loginid" />
+          </Key>
+          <Property Name="loginid" Type="int" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="255" />
+          <Property Name="password" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <Association Name="fk_bookid">
+          <End Role="tblBook" Type="Self.tblBook" Multiplicity="1" />
+          <End Role="tblBooksIssued" Type="Self.tblBooksIssued" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBook">
+              <PropertyRef Name="code" />
+            </Principal>
+            <Dependent Role="tblBooksIssued">
+              <PropertyRef Name="bookid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_logid">
+          <End Role="tblStudentInfo" Type="Self.tblStudentInfo" Multiplicity="1" />
+          <End Role="tblStudentLogin" Type="Self.tblStudentLogin" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblStudentInfo">
+              <PropertyRef Name="libid" />
+            </Principal>
+            <Dependent Role="tblStudentLogin">
+              <PropertyRef Name="logid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_loginid">
+          <End Role="tblTeacherInfo" Type="Self.tblTeacherInfo" Multiplicity="1" />
+          <End Role="tblTeacherLogin" Type="Self.tblTeacherLogin" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblTeacherInfo">
+              <PropertyRef Name="tid" />
+            </Principal>
+            <Dependent Role="tblTeacherLogin">
+              <PropertyRef Name="loginid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_stuid">
+          <End Role="tblStudentInfo" Type="Self.tblStudentInfo" Multiplicity="1" />
+          <End Role="tblBooksIssued" Type="Self.tblBooksIssued" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblStudentInfo">
+              <PropertyRef Name="libid" />
+            </Principal>
+            <Dependent Role="tblBooksIssued">
+              <PropertyRef Name="stuid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="sp_addBooks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="title" Type="varchar" Mode="In" />
+          <Parameter Name="author" Type="varchar" Mode="In" />
+          <Parameter Name="publication" Type="varchar" Mode="In" />
+          <Parameter Name="subject" Type="varchar" Mode="In" />
+          <Parameter Name="no_0f_copies" Type="int" Mode="In" />
+          <Parameter Name="cover_pic" Type="image" Mode="In" />
+        </Function>
+        <Function Name="sp_insertSTDLogin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="log_id" Type="int" Mode="In" />
+          <Parameter Name="username" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_insertStudentInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="reg_id" Type="int" Mode="In" />
+          <Parameter Name="branch" Type="varchar" Mode="In" />
+          <Parameter Name="section" Type="varchar" Mode="In" />
+          <Parameter Name="semester" Type="varchar" Mode="In" />
+          <Parameter Name="yoa" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_insertTCHRLogin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="login_id" Type="int" Mode="In" />
+          <Parameter Name="username" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_insertTeacherInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="varchar" Mode="In" />
+          <Parameter Name="designation" Type="varchar" Mode="In" />
+          <Parameter Name="branch" Type="varchar" Mode="In" />
+          <Parameter Name="contact_no" Type="varchar" Mode="In" />
+          <Parameter Name="lectures" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_issueBooks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="book_id" Type="int" Mode="In" />
+          <Parameter Name="student_id" Type="int" Mode="In" />
+          <Parameter Name="issue_date" Type="date" Mode="In" />
+          <Parameter Name="return_date" Type="date" Mode="In" />
+          <Parameter Name="no_of_books" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_libraryID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="reg_id" Type="int" Mode="In" />
+          <Parameter Name="libid" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="sp_returnBooks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="book_id" Type="int" Mode="In" />
+          <Parameter Name="student_id" Type="int" Mode="In" />
+          <Parameter Name="no_of_books" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_searchBooks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="code" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_searchBooksByAuthor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="search" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_searchBooksByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="search" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="sp_selectBookAuthor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_selectBookTitle" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_teacherID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="name" Type="varchar" Mode="In" />
+          <Parameter Name="tid" Type="int" Mode="InOut" />
+        </Function>
+        <EntityContainer Name="BCC_DOTNET_LMSModelStoreContainer">
+          <EntitySet Name="tblBook" EntityType="Self.tblBook" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblStudentInfo" EntityType="Self.tblStudentInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblTeacherInfo" EntityType="Self.tblTeacherInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblBooksIssued" EntityType="Self.tblBooksIssued" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[tblBooksIssued].[bookid] AS [bookid], 
+[tblBooksIssued].[stuid] AS [stuid], 
+[tblBooksIssued].[issue_date] AS [issue_date], 
+[tblBooksIssued].[return_date] AS [return_date]
+FROM [dbo].[tblBooksIssued] AS [tblBooksIssued]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="tblStudentLogin" EntityType="Self.tblStudentLogin" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[tblStudentLogin].[logid] AS [logid], 
+[tblStudentLogin].[username] AS [username], 
+[tblStudentLogin].[password] AS [password], 
+[tblStudentLogin].[number_of_books] AS [number_of_books]
+FROM [dbo].[tblStudentLogin] AS [tblStudentLogin]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="tblTeacherLogin" EntityType="Self.tblTeacherLogin" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[tblTeacherLogin].[loginid] AS [loginid], 
+[tblTeacherLogin].[username] AS [username], 
+[tblTeacherLogin].[password] AS [password]
+FROM [dbo].[tblTeacherLogin] AS [tblTeacherLogin]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="fk_bookid" Association="Self.fk_bookid">
+            <End Role="tblBook" EntitySet="tblBook" />
+            <End Role="tblBooksIssued" EntitySet="tblBooksIssued" />
+          </AssociationSet>
+          <AssociationSet Name="fk_logid" Association="Self.fk_logid">
+            <End Role="tblStudentInfo" EntitySet="tblStudentInfo" />
+            <End Role="tblStudentLogin" EntitySet="tblStudentLogin" />
+          </AssociationSet>
+          <AssociationSet Name="fk_loginid" Association="Self.fk_loginid">
+            <End Role="tblTeacherInfo" EntitySet="tblTeacherInfo" />
+            <End Role="tblTeacherLogin" EntitySet="tblTeacherLogin" />
+          </AssociationSet>
+          <AssociationSet Name="fk_stuid" Association="Self.fk_stuid">
+            <End Role="tblStudentInfo" EntitySet="tblStudentInfo" />
+            <End Role="tblBooksIssued" EntitySet="tblBooksIssued" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BCC_DOTNET_LMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="BCC_DOTNET_LMSEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tblBooks" EntityType="BCC_DOTNET_LMSModel.tblBook" />
+          <EntitySet Name="tblStudentInfoes" EntityType="BCC_DOTNET_LMSModel.tblStudentInfo" />
+          <EntitySet Name="tblTeacherInfoes" EntityType="BCC_DOTNET_LMSModel.tblTeacherInfo" />
+          <EntitySet Name="tblBooksIssueds" EntityType="BCC_DOTNET_LMSModel.tblBooksIssued" />
+          <EntitySet Name="tblStudentLogins" EntityType="BCC_DOTNET_LMSModel.tblStudentLogin" />
+          <EntitySet Name="tblTeacherLogins" EntityType="BCC_DOTNET_LMSModel.tblTeacherLogin" />
+          <AssociationSet Name="fk_bookid" Association="BCC_DOTNET_LMSModel.fk_bookid">
+            <End Role="tblBook" EntitySet="tblBooks" />
+            <End Role="tblBooksIssued" EntitySet="tblBooksIssueds" />
+          </AssociationSet>
+          <AssociationSet Name="fk_logid" Association="BCC_DOTNET_LMSModel.fk_logid">
+            <End Role="tblStudentInfo" EntitySet="tblStudentInfoes" />
+            <End Role="tblStudentLogin" EntitySet="tblStudentLogins" />
+          </AssociationSet>
+          <AssociationSet Name="fk_stuid" Association="BCC_DOTNET_LMSModel.fk_stuid">
+            <End Role="tblStudentInfo" EntitySet="tblStudentInfoes" />
+            <End Role="tblBooksIssued" EntitySet="tblBooksIssueds" />
+          </AssociationSet>
+          <AssociationSet Name="fk_loginid" Association="BCC_DOTNET_LMSModel.fk_loginid">
+            <End Role="tblTeacherInfo" EntitySet="tblTeacherInfoes" />
+            <End Role="tblTeacherLogin" EntitySet="tblTeacherLogins" />
+          </AssociationSet>
+          <FunctionImport Name="sp_insertStudentInfo">
+            <Parameter Name="reg_id" Mode="In" Type="Int32" />
+            <Parameter Name="branch" Mode="In" Type="String" />
+            <Parameter Name="section" Mode="In" Type="String" />
+            <Parameter Name="semester" Mode="In" Type="String" />
+            <Parameter Name="yoa" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_libraryID">
+            <Parameter Name="reg_id" Mode="In" Type="Int32" />
+            <Parameter Name="libid" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_insertSTDLogin">
+            <Parameter Name="log_id" Mode="In" Type="Int32" />
+            <Parameter Name="username" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_addBooks">
+            <Parameter Name="title" Mode="In" Type="String" />
+            <Parameter Name="author" Mode="In" Type="String" />
+            <Parameter Name="publication" Mode="In" Type="String" />
+            <Parameter Name="subject" Mode="In" Type="String" />
+            <Parameter Name="no_0f_copies" Mode="In" Type="Int32" />
+            <Parameter Name="cover_pic" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_insertTCHRLogin">
+            <Parameter Name="login_id" Mode="In" Type="Int32" />
+            <Parameter Name="username" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_issueBooks">
+            <Parameter Name="book_id" Mode="In" Type="Int32" />
+            <Parameter Name="student_id" Mode="In" Type="Int32" />
+            <Parameter Name="issue_date" Mode="In" Type="DateTime" />
+            <Parameter Name="return_date" Mode="In" Type="DateTime" />
+            <Parameter Name="no_of_books" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_returnBooks">
+            <Parameter Name="book_id" Mode="In" Type="Int32" />
+            <Parameter Name="student_id" Mode="In" Type="Int32" />
+            <Parameter Name="no_of_books" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_teacherID">
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="tid" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_insertTeacherInfo">
+            <Parameter Name="name" Mode="In" Type="String" />
+            <Parameter Name="designation" Mode="In" Type="String" />
+            <Parameter Name="branch" Mode="In" Type="String" />
+            <Parameter Name="contact_no" Mode="In" Type="String" />
+            <Parameter Name="lectures" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_selectBookAuthor" ReturnType="Collection(String)" />
+          <FunctionImport Name="sp_selectBookTitle" ReturnType="Collection(String)" />
+          <FunctionImport Name="sp_searchBooksByAuthor">
+            <Parameter Name="search" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_searchBooksByName">
+            <Parameter Name="search" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="tblBook">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="author" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="publication" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="subject" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="no_of_copies" Type="Int32" />
+          <NavigationProperty Name="tblBooksIssueds" Relationship="BCC_DOTNET_LMSModel.fk_bookid" FromRole="tblBook" ToRole="tblBooksIssued" />
+          <Property Name="cover_pic" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="tblStudentInfo">
+          <Key>
+            <PropertyRef Name="libid" />
+          </Key>
+          <Property Name="libid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="regno" Type="Int32" />
+          <Property Name="branch" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="section" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="semester" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="year_of_admission" Type="Int32" />
+          <NavigationProperty Name="tblStudentLogin" Relationship="BCC_DOTNET_LMSModel.fk_logid" FromRole="tblStudentInfo" ToRole="tblStudentLogin" />
+          <NavigationProperty Name="tblBooksIssueds" Relationship="BCC_DOTNET_LMSModel.fk_stuid" FromRole="tblStudentInfo" ToRole="tblBooksIssued" />
+        </EntityType>
+        <EntityType Name="tblTeacherInfo">
+          <Key>
+            <PropertyRef Name="tid" />
+          </Key>
+          <Property Name="tid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="designation" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="branch" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="contact_no" Type="Int32" />
+          <Property Name="lectures" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tblTeacherLogin" Relationship="BCC_DOTNET_LMSModel.fk_loginid" FromRole="tblTeacherInfo" ToRole="tblTeacherLogin" />
+        </EntityType>
+        <EntityType Name="tblBooksIssued">
+          <Key>
+            <PropertyRef Name="bookid" />
+            <PropertyRef Name="stuid" />
+          </Key>
+          <Property Name="bookid" Type="Int32" Nullable="false" />
+          <Property Name="stuid" Type="Int32" Nullable="false" />
+          <Property Name="issue_date" Type="DateTime" Precision="0" />
+          <Property Name="return_date" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="tblBook" Relationship="BCC_DOTNET_LMSModel.fk_bookid" FromRole="tblBooksIssued" ToRole="tblBook" />
+          <NavigationProperty Name="tblStudentInfo" Relationship="BCC_DOTNET_LMSModel.fk_stuid" FromRole="tblBooksIssued" ToRole="tblStudentInfo" />
+        </EntityType>
+        <EntityType Name="tblStudentLogin">
+          <Key>
+            <PropertyRef Name="logid" />
+          </Key>
+          <Property Name="logid" Type="Int32" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="number_of_books" Type="Int32" />
+          <NavigationProperty Name="tblStudentInfo" Relationship="BCC_DOTNET_LMSModel.fk_logid" FromRole="tblStudentLogin" ToRole="tblStudentInfo" />
+        </EntityType>
+        <EntityType Name="tblTeacherLogin">
+          <Key>
+            <PropertyRef Name="loginid" />
+          </Key>
+          <Property Name="loginid" Type="Int32" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tblTeacherInfo" Relationship="BCC_DOTNET_LMSModel.fk_loginid" FromRole="tblTeacherLogin" ToRole="tblTeacherInfo" />
+        </EntityType>
+        <Association Name="fk_bookid">
+          <End Type="BCC_DOTNET_LMSModel.tblBook" Role="tblBook" Multiplicity="1" />
+          <End Type="BCC_DOTNET_LMSModel.tblBooksIssued" Role="tblBooksIssued" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBook">
+              <PropertyRef Name="code" />
+            </Principal>
+            <Dependent Role="tblBooksIssued">
+              <PropertyRef Name="bookid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_logid">
+          <End Type="BCC_DOTNET_LMSModel.tblStudentInfo" Role="tblStudentInfo" Multiplicity="1" />
+          <End Type="BCC_DOTNET_LMSModel.tblStudentLogin" Role="tblStudentLogin" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblStudentInfo">
+              <PropertyRef Name="libid" />
+            </Principal>
+            <Dependent Role="tblStudentLogin">
+              <PropertyRef Name="logid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_stuid">
+          <End Type="BCC_DOTNET_LMSModel.tblStudentInfo" Role="tblStudentInfo" Multiplicity="1" />
+          <End Type="BCC_DOTNET_LMSModel.tblBooksIssued" Role="tblBooksIssued" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblStudentInfo">
+              <PropertyRef Name="libid" />
+            </Principal>
+            <Dependent Role="tblBooksIssued">
+              <PropertyRef Name="stuid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_loginid">
+          <End Type="BCC_DOTNET_LMSModel.tblTeacherInfo" Role="tblTeacherInfo" Multiplicity="1" />
+          <End Type="BCC_DOTNET_LMSModel.tblTeacherLogin" Role="tblTeacherLogin" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblTeacherInfo">
+              <PropertyRef Name="tid" />
+            </Principal>
+            <Dependent Role="tblTeacherLogin">
+              <PropertyRef Name="loginid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="sp_searchBooks_Result">
+          <Property Type="Int32" Name="code" Nullable="false" />
+          <Property Type="String" Name="author" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="publication" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="subject" Nullable="true" MaxLength="255" />
+          <Property Type="Int32" Name="no_of_copies" Nullable="true" />
+          <Property Type="Binary" Name="cover_pic" Nullable="true" MaxLength="Max" />
+          <Property Type="String" Name="title" Nullable="true" MaxLength="255" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BCC_DOTNET_LMSModelStoreContainer" CdmEntityContainer="BCC_DOTNET_LMSEntities">
+          <EntitySetMapping Name="tblBooks">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblBook">
+              <MappingFragment StoreEntitySet="tblBook">
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="cover_pic" ColumnName="cover_pic" />
+                <ScalarProperty Name="no_of_copies" ColumnName="no_of_copies" />
+                <ScalarProperty Name="subject" ColumnName="subject" />
+                <ScalarProperty Name="publication" ColumnName="publication" />
+                <ScalarProperty Name="author" ColumnName="author" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblStudentInfoes">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblStudentInfo">
+              <MappingFragment StoreEntitySet="tblStudentInfo">
+                <ScalarProperty Name="year_of_admission" ColumnName="year_of_admission" />
+                <ScalarProperty Name="semester" ColumnName="semester" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="branch" ColumnName="branch" />
+                <ScalarProperty Name="regno" ColumnName="regno" />
+                <ScalarProperty Name="libid" ColumnName="libid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblTeacherInfoes">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblTeacherInfo">
+              <MappingFragment StoreEntitySet="tblTeacherInfo">
+                <ScalarProperty Name="lectures" ColumnName="lectures" />
+                <ScalarProperty Name="contact_no" ColumnName="contact_no" />
+                <ScalarProperty Name="branch" ColumnName="branch" />
+                <ScalarProperty Name="designation" ColumnName="designation" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="tid" ColumnName="tid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblBooksIssueds">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblBooksIssued">
+              <MappingFragment StoreEntitySet="tblBooksIssued">
+                <ScalarProperty Name="return_date" ColumnName="return_date" />
+                <ScalarProperty Name="issue_date" ColumnName="issue_date" />
+                <ScalarProperty Name="stuid" ColumnName="stuid" />
+                <ScalarProperty Name="bookid" ColumnName="bookid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblStudentLogins">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblStudentLogin">
+              <MappingFragment StoreEntitySet="tblStudentLogin">
+                <ScalarProperty Name="number_of_books" ColumnName="number_of_books" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="logid" ColumnName="logid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblTeacherLogins">
+            <EntityTypeMapping TypeName="BCC_DOTNET_LMSModel.tblTeacherLogin">
+              <MappingFragment StoreEntitySet="tblTeacherLogin">
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="loginid" ColumnName="loginid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_insertStudentInfo" FunctionName="BCC_DOTNET_LMSModel.Store.sp_insertStudentInfo" />
+          <FunctionImportMapping FunctionImportName="sp_libraryID" FunctionName="BCC_DOTNET_LMSModel.Store.sp_libraryID" />
+          <FunctionImportMapping FunctionImportName="sp_insertSTDLogin" FunctionName="BCC_DOTNET_LMSModel.Store.sp_insertSTDLogin" />
+          <FunctionImportMapping FunctionImportName="sp_addBooks" FunctionName="BCC_DOTNET_LMSModel.Store.sp_addBooks" />
+          <FunctionImportMapping FunctionImportName="sp_insertTCHRLogin" FunctionName="BCC_DOTNET_LMSModel.Store.sp_insertTCHRLogin" />
+          <FunctionImportMapping FunctionImportName="sp_issueBooks" FunctionName="BCC_DOTNET_LMSModel.Store.sp_issueBooks" />
+          <FunctionImportMapping FunctionImportName="sp_returnBooks" FunctionName="BCC_DOTNET_LMSModel.Store.sp_returnBooks" />
+          <FunctionImportMapping FunctionImportName="sp_teacherID" FunctionName="BCC_DOTNET_LMSModel.Store.sp_teacherID" />
+          <FunctionImportMapping FunctionImportName="sp_insertTeacherInfo" FunctionName="BCC_DOTNET_LMSModel.Store.sp_insertTeacherInfo" />
+          <FunctionImportMapping FunctionImportName="sp_selectBookAuthor" FunctionName="BCC_DOTNET_LMSModel.Store.sp_selectBookAuthor" />
+          <FunctionImportMapping FunctionImportName="sp_selectBookTitle" FunctionName="BCC_DOTNET_LMSModel.Store.sp_selectBookTitle" />
+          <FunctionImportMapping FunctionImportName="sp_searchBooksByAuthor" FunctionName="BCC_DOTNET_LMSModel.Store.sp_searchBooksByAuthor" />
+          <FunctionImportMapping FunctionImportName="sp_searchBooksByName" FunctionName="BCC_DOTNET_LMSModel.Store.sp_searchBooksByName" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Default" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
